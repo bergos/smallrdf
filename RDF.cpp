@@ -111,7 +111,7 @@ bool RDFLiteral::equals(const RDFTerm* other) const {
     return false;
   }
 
-  RDFLiteral* otherLiteral = reinterpret_cast<RDFLiteral*>(other);
+  const RDFLiteral* otherLiteral = reinterpret_cast<const RDFLiteral*>(other);
 
   return value->equals(otherLiteral->value)
       && language->equals(otherLiteral->language)
