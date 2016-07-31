@@ -39,10 +39,10 @@ typedef enum {
 
 class RDFTerm {
  public:
-  const RDFTermType termType;
-  const RDFString* value;
+  RDFTermType termType;
+  RDFString* value;
 
-  RDFTerm(const RDFTermType termType, const RDFString* value);
+  RDFTerm(RDFTermType termType, RDFString* value);
   virtual ~RDFTerm();
 
   virtual bool equals(const RDFTerm* other) const;
@@ -50,34 +50,34 @@ class RDFTerm {
 
 class RDFNamedNode : public RDFTerm {
  public:
-  RDFNamedNode(const RDFString* value);
+  RDFNamedNode(RDFString* value);
 };
 
 class RDFLiteral : public RDFTerm {
  public:
-  const RDFString* language;
-  const RDFString* datatype;
+  RDFString* language;
+  RDFString* datatype;
 
-  RDFLiteral(const RDFString* value, const RDFString* language = 0,
-             const RDFString* datatype = 0);
+  RDFLiteral(RDFString* value, RDFString* language = 0,
+             RDFString* datatype = 0);
 
   virtual bool equals(const RDFTerm* other) const;
 };
 
 class RDFBlankNode : public RDFTerm {
  public:
-  RDFBlankNode(const RDFString* value);
+  RDFBlankNode(RDFString* value);
 };
 
 class RDFQuad {
  public:
-  const RDFTerm* subject;
-  const RDFTerm* predicate;
-  const RDFTerm* object;
-  const RDFTerm* graph;
+  RDFTerm* subject;
+  RDFTerm* predicate;
+  RDFTerm* object;
+  RDFTerm* graph;
 
-  RDFQuad(const RDFTerm* subject, const RDFTerm* predicate,
-          const RDFTerm* object, const RDFTerm* graph = 0);
+  RDFQuad(RDFTerm* subject, RDFTerm* predicate,
+          RDFTerm* object, RDFTerm* graph = 0);
 
   const bool match(const RDFTerm* subject, const RDFTerm* predicate = 0,
                    const RDFTerm* object = 0, const RDFTerm* graph = 0);
@@ -104,14 +104,14 @@ class RDFDocument : public RDFDataset {
 
   RDFString* string(const char* buf);
   RDFString* string(const uint8_t* buf, const size_t length);
-  RDFNamedNode* namedNode(const RDFString* value);
-  RDFLiteral* literal(const RDFString* value, const RDFString* language,
-                      const RDFString* datatype);
-  RDFBlankNode* blankNode(const RDFString* value);
-  RDFQuad* triple(const RDFTerm* subject, const RDFTerm* predicate,
-                  const RDFTerm* object);
-  RDFQuad* quad(const RDFTerm* subject, const RDFTerm* const predicate,
-                const RDFTerm* object, const RDFTerm* graph);
+  RDFNamedNode* namedNode(RDFString* value);
+  RDFLiteral* literal(RDFString* value, RDFString* language,
+                      RDFString* datatype);
+  RDFBlankNode* blankNode(RDFString* value);
+  RDFQuad* triple(RDFTerm* subject, RDFTerm* predicate,
+                  RDFTerm* object);
+  RDFQuad* quad(RDFTerm* subject, RDFTerm* predicate,
+                RDFTerm* object, RDFTerm* graph);
 
  protected:
   RDFList<RDFString*> _strings;

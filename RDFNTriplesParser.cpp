@@ -10,7 +10,7 @@ NTriplesParser::NTriplesParser(const RDFString* input, RDFDocument* document)
       _cur(input->buffer()),
       _end(input->buffer() + input->length()) {
   if (document == 0) {
-    document = new RDFDocument();
+    this->document = new RDFDocument();
   }
 }
 
@@ -28,18 +28,18 @@ RDFDocument* NTriplesParser::parse_static(const RDFString* input) {
   return parser.parse();
 }
 
-const RDFQuad* NTriplesParser::parseQuad() {
+RDFQuad* NTriplesParser::parseQuad() {
   readWhiteSpace();
 
-  const RDFTerm* subject = readSubject();
-
-  readWhiteSpace();
-
-  const RDFTerm* predicate = readPredicate();
+  RDFTerm* subject = readSubject();
 
   readWhiteSpace();
 
-  const RDFTerm* object = readObject();
+  RDFTerm* predicate = readPredicate();
+
+  readWhiteSpace();
+
+  RDFTerm* object = readObject();
 
   readWhiteSpace();
 
@@ -54,18 +54,18 @@ const RDFQuad* NTriplesParser::parseQuad() {
   }
 }
 
-const RDFQuad* NTriplesParser::parseQuad_static(RDFString* input,
+RDFQuad* NTriplesParser::parseQuad_static(RDFString* input,
                                                 RDFDocument* document) {
   NTriplesParser parser(input, document);
 
   return parser.parseQuad();
 }
 
-const bool NTriplesParser::hasNext() {
+bool NTriplesParser::hasNext() {
   return _cur < _end;
 }
 
-const uint8_t NTriplesParser::getNext(const bool keep) {
+uint8_t NTriplesParser::getNext(const bool keep) {
   if (keep) {
     return *_cur;
   } else {
@@ -73,7 +73,7 @@ const uint8_t NTriplesParser::getNext(const bool keep) {
   }
 }
 
-const bool NTriplesParser::readWhiteSpace() {
+bool NTriplesParser::readWhiteSpace() {
   bool read = false;
   uint8_t next = getNext(true);
 
@@ -89,7 +89,7 @@ const bool NTriplesParser::readWhiteSpace() {
   return read;
 }
 
-const RDFTerm* NTriplesParser::readSubject() {
+RDFTerm* NTriplesParser::readSubject() {
   if (isIRIRef()) {
     return document->namedNode(readIRIRef());
   } else {
@@ -97,7 +97,7 @@ const RDFTerm* NTriplesParser::readSubject() {
   }
 }
 
-const RDFTerm* NTriplesParser::readPredicate() {
+RDFTerm* NTriplesParser::readPredicate() {
   if (isIRIRef()) {
     return document->namedNode(readIRIRef());
   } else {
@@ -105,7 +105,7 @@ const RDFTerm* NTriplesParser::readPredicate() {
   }
 }
 
-const RDFTerm* NTriplesParser::readObject() {
+RDFTerm* NTriplesParser::readObject() {
   if (isIRIRef()) {
     return document->namedNode(readIRIRef());
   } else if (isLiteral()) {
@@ -117,13 +117,13 @@ const RDFTerm* NTriplesParser::readObject() {
   }
 }
 
-const bool NTriplesParser::isLiteral() {
+bool NTriplesParser::isLiteral() {
   return isStringLiteralQuote();
 }
 
-const RDFLiteral* NTriplesParser::readLiteral() {
-  const RDFString* value = readStringLiteralQuote();
-  const RDFString* language = readLangtag();
+RDFLiteral* NTriplesParser::readLiteral() {
+  RDFString* value = readStringLiteralQuote();
+  RDFString* language = readLangtag();
 
   // TODO(@bergos) check for ^^
   if (getNext(true) == '^') {
@@ -131,12 +131,12 @@ const RDFLiteral* NTriplesParser::readLiteral() {
     getNext();
   }
 
-  const RDFString* datatype = readIRIRef();
+  RDFString* datatype = readIRIRef();
 
   return document->literal(value, language, datatype);
 }
 
-const RDFString* NTriplesParser::readLangtag() {
+RDFString* NTriplesParser::readLangtag() {
   if (getNext(true) == '@') {
     return 0;
   }
@@ -152,11 +152,11 @@ const RDFString* NTriplesParser::readLangtag() {
   return document->string(buf, length);
 }
 
-const bool NTriplesParser::isIRIRef() {
+bool NTriplesParser::isIRIRef() {
   return getNext(true) == '<';
 }
 
-const RDFString* NTriplesParser::readIRIRef() {
+RDFString* NTriplesParser::readIRIRef() {
   if (!isIRIRef()) {
     return 0;
   }
@@ -171,11 +171,11 @@ const RDFString* NTriplesParser::readIRIRef() {
   return document->string(buf, length);
 }
 
-const bool NTriplesParser::isStringLiteralQuote() {
+bool NTriplesParser::isStringLiteralQuote() {
   return getNext(true) == '"';
 }
 
-const RDFString* NTriplesParser::readStringLiteralQuote() {
+RDFString* NTriplesParser::readStringLiteralQuote() {
   const uint8_t* buf = ++_cur;
   size_t length = 0;
 
@@ -186,12 +186,12 @@ const RDFString* NTriplesParser::readStringLiteralQuote() {
   return document->string(buf, length);
 }
 
-const bool NTriplesParser::isBlankNodeLabel() {
+bool NTriplesParser::isBlankNodeLabel() {
   // TODO(@bergos) check for _:
   return getNext(true) == '_';
 }
 
-const RDFString* NTriplesParser::readBlankNodeLabel() {
+RDFString* NTriplesParser::readBlankNodeLabel() {
   _cur += 2;
 
   const uint8_t* buf = _cur;
