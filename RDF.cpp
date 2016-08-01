@@ -61,21 +61,23 @@ const bool RDFString::equals(const RDFString* other) const {
   return memcmp(buffer(), other->buffer(), length()) == 0;
 }
 
-const char* RDFString::c_str() {
+const char* RDFString::c_str() const {
   if (_trailingZero) {
     return (const char*) _buf;
   } else {
     if (!_c_str) {
-      _c_str = new char[_length + 1];
-      memcpy(_c_str, _buf, _length);
-      *(_c_str + _length) = 0;
+      char** writeableCStr = const_cast<char**>(&this->_c_str);
+
+      *writeableCStr = new char[_length + 1];
+      memcpy(*writeableCStr, _buf, _length);
+      *(*writeableCStr + _length) = 0;
     }
 
     return _c_str;
   }
 }
 
-RDFTerm::RDFTerm(RDFTermType termType, RDFString* value)
+RDFTerm::RDFTerm(const RDFTermType termType, const RDFString* value)
     : termType(termType),
       value(value) {
 }
@@ -91,12 +93,12 @@ bool RDFTerm::equals(const RDFTerm* other) const {
   return termType == other->termType && value->equals(other->value);
 }
 
-RDFNamedNode::RDFNamedNode(RDFString* value)
+RDFNamedNode::RDFNamedNode(const RDFString* value)
     : RDFTerm(RDF_NAMED_NODE, value) {
 }
 
-RDFLiteral::RDFLiteral(RDFString* value, RDFString* language,
-                       RDFString* datatype)
+RDFLiteral::RDFLiteral(const RDFString* value, const RDFString* language,
+                       const RDFString* datatype)
     : RDFTerm(RDF_LITERAL, value),
       language(language),
       datatype(datatype) {
@@ -118,12 +120,12 @@ bool RDFLiteral::equals(const RDFTerm* other) const {
       && datatype->equals(otherLiteral->datatype);
 }
 
-RDFBlankNode::RDFBlankNode(RDFString* value)
+RDFBlankNode::RDFBlankNode(const RDFString* value)
     : RDFTerm(RDF_BLANK_NODE, value) {
 }
 
-RDFQuad::RDFQuad(RDFTerm* subject, RDFTerm* predicate,
-                 RDFTerm* object, RDFTerm* graph)
+RDFQuad::RDFQuad(const RDFTerm* subject, const RDFTerm* predicate,
+                 const RDFTerm* object, const RDFTerm* graph)
     : subject(subject),
       predicate(predicate),
       object(object),
@@ -199,9 +201,9 @@ RDFDocument::~RDFDocument() {
   }
 }
 
-RDFString* RDFDocument::string(const char* buf) {
-  RDFString cur(buf);
-  RDFString* found = findString(&cur);
+const RDFString* RDFDocument::string(const char* buf) {
+  const RDFString cur(buf);
+  const RDFString* found = findString(&cur);
 
   if (found != 0) {
     return found;
@@ -210,9 +212,9 @@ RDFString* RDFDocument::string(const char* buf) {
   return reinterpret_cast<RDFString*>(_strings.add(new RDFString(buf)));
 }
 
-RDFString* RDFDocument::string(const uint8_t* buf, const size_t length) {
-  RDFString cur(buf, length);
-  RDFString* found = findString(&cur);
+const RDFString* RDFDocument::string(const uint8_t* buf, const size_t length) {
+  const RDFString cur(buf, length);
+  const RDFString* found = findString(&cur);
 
   if (found != 0) {
     return found;
@@ -221,53 +223,51 @@ RDFString* RDFDocument::string(const uint8_t* buf, const size_t length) {
   return reinterpret_cast<RDFString*>(_strings.add(new RDFString(buf, length)));
 }
 
-RDFNamedNode* RDFDocument::namedNode(RDFString* value) {
-  RDFNamedNode cur(value);
-  RDFTerm* found = findTerm(&cur);
+const RDFNamedNode* RDFDocument::namedNode(const RDFString* value) {
+  const RDFNamedNode cur(value);
+  const RDFTerm* found = findTerm(&cur);
 
   if (found != 0) {
-    return reinterpret_cast<RDFNamedNode*>(found);
+    return reinterpret_cast<const RDFNamedNode*>(found);
   }
 
-  return reinterpret_cast<RDFNamedNode*>(_terms.add(new RDFNamedNode(value)));
+  return reinterpret_cast<const RDFNamedNode*>(_terms.add(
+      new RDFNamedNode(value)));
 }
 
-RDFLiteral* RDFDocument::literal(RDFString* value,
-                                 RDFString* language,
-                                 RDFString* datatype) {
-  RDFLiteral cur(value, language, datatype);
-  RDFTerm* found = findTerm(&cur);
+const RDFLiteral* RDFDocument::literal(const RDFString* value,
+                                       const RDFString* language,
+                                       const RDFString* datatype) {
+  const RDFLiteral cur(value, language, datatype);
+  const RDFTerm* found = findTerm(&cur);
 
   if (found != 0) {
-    return reinterpret_cast<RDFLiteral*>(found);
+    return reinterpret_cast<const RDFLiteral*>(found);
   }
 
-  return reinterpret_cast<RDFLiteral*>(_terms.add(
+  return reinterpret_cast<const RDFLiteral*>(_terms.add(
       new RDFLiteral(value, language, datatype)));
 }
 
-RDFBlankNode* RDFDocument::blankNode(RDFString* value) {
-  RDFBlankNode cur(value);
-  RDFTerm* found = findTerm(&cur);
+const RDFBlankNode* RDFDocument::blankNode(const RDFString* value) {
+  const RDFBlankNode cur(value);
+  const RDFTerm* found = findTerm(&cur);
 
   if (found != 0) {
-    return reinterpret_cast<RDFBlankNode*>(found);
+    return reinterpret_cast<const RDFBlankNode*>(found);
   }
 
-  return reinterpret_cast<RDFBlankNode*>(_terms.add(new RDFBlankNode(value)));
+  return reinterpret_cast<const RDFBlankNode*>(_terms.add(
+      new RDFBlankNode(value)));
 }
 
-RDFQuad* RDFDocument::triple(RDFTerm* subject, RDFTerm* predicate,
-                             RDFTerm* object) {
-  return quads.add(new RDFQuad(subject, predicate, object));
-}
-
-RDFQuad* RDFDocument::quad(RDFTerm* subject, RDFTerm* predicate,
-                           RDFTerm* object, RDFTerm* graph) {
+const RDFQuad* RDFDocument::quad(const RDFTerm* subject,
+                                 const RDFTerm* predicate,
+                                 const RDFTerm* object, const RDFTerm* graph) {
   return quads.add(new RDFQuad(subject, predicate, object, graph));
 }
 
-RDFString* RDFDocument::findString(const RDFString* newStr) const {
+const RDFString* RDFDocument::findString(const RDFString* newStr) const {
   for (int i = 0; i < _strings.length; i++) {
     RDFString* cur = _strings.get(i);
 
@@ -279,7 +279,7 @@ RDFString* RDFDocument::findString(const RDFString* newStr) const {
   return 0;
 }
 
-RDFTerm* RDFDocument::findTerm(const RDFTerm* newTerm) const {
+const RDFTerm* RDFDocument::findTerm(const RDFTerm* newTerm) const {
   for (int i = 0; i < _terms.length; i++) {
     RDFTerm* cur = _terms.get(i);
 

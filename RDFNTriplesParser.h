@@ -14,10 +14,11 @@ class NTriplesParser {
   NTriplesParser(const RDFString* input, RDFDocument* document = 0);
 
   RDFDocument* parse();
-  static RDFDocument* parse_static(const RDFString* input);
+  static RDFDocument* parse_static(const RDFString* input,
+                                   RDFDocument* document = 0);
 
-  RDFQuad* parseQuad();
-  static RDFQuad* parseQuad_static(RDFString* input,
+  const RDFQuad* parseQuad();
+  static const RDFQuad* parseQuad_static(RDFString* input,
                                          RDFDocument* document);
 
  protected:
@@ -25,21 +26,21 @@ class NTriplesParser {
   const uint8_t* _cur;
   const uint8_t* _end;
 
-  bool hasNext();
-  uint8_t getNext(const bool keep = false);
-  bool readWhiteSpace();
-  RDFTerm* readSubject();
-  RDFTerm* readPredicate();
-  RDFTerm* readObject();
-  bool isLiteral();
-  RDFLiteral* readLiteral();
-  RDFString* readLangtag();
-  bool isIRIRef();
-  RDFString* readIRIRef();
-  bool isStringLiteralQuote();
-  RDFString* readStringLiteralQuote();
-  bool isBlankNodeLabel();
-  RDFString* readBlankNodeLabel();
+  const bool hasNext();
+  const uint8_t getNext(const bool keep = false);
+  const bool readWhiteSpace();
+  const RDFTerm* readSubject();
+  const RDFTerm* readPredicate();
+  const RDFTerm* readObject();
+  const bool isLiteral();
+  const RDFLiteral* readLiteral();
+  const RDFString* readLangtag();
+  const bool isIRIRef();
+  const RDFString* readIRIRef();
+  const bool isStringLiteralQuote();
+  const RDFString* readStringLiteralQuote();
+  const bool isBlankNodeLabel();
+  const RDFString* readBlankNodeLabel();
 };
 
 #endif  // RDFNTRIPLESPARSER_H_

@@ -168,9 +168,9 @@ TEST(RDFDataset, find) {
 TEST(RDFDocument, string) {
   RDFDocument doc;
 
-  RDFString* str1 = doc.string("test");
-  RDFString* str2 = doc.string("test");
-  RDFString* str3 = doc.string((const uint8_t*) "test", 4);
+  const RDFString* str1 = doc.string("test");
+  const RDFString* str2 = doc.string("test");
+  const RDFString* str3 = doc.string((const uint8_t*) "test", 4);
 
   ASSERT_STREQ(str1->c_str(), "test");
   ASSERT_EQ(str1, str2);
