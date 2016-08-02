@@ -1,11 +1,11 @@
 CPP_SRCS += \
-  RDF.cpp \
-  RDFNTriplesParser.cpp \
-  RDFNTriplesSerializer.cpp \
-  RDF_test.cpp \
-  RDFNTriplesParser_test.cpp \
-  RDFNTriplesSerializer_test.cpp \
-  test.cpp
+  src/RDF.cpp \
+  src/RDFNTriplesParser.cpp \
+  src/RDFNTriplesSerializer.cpp \
+  extra/test/RDF_test.cpp \
+  extra/test/RDFNTriplesParser_test.cpp \
+  extra/test/RDFNTriplesSerializer_test.cpp \
+  extra/test/test.cpp
 
 OBJS += \
   ./build/RDF.o \
@@ -29,11 +29,13 @@ LIBS += \
   -lgtest \
   -lpthread
 
-#./build:
-#	@mkdir ./build
-
-./build/%.o: %.cpp
+./build/%.o: ./src/%.cpp
+	@mkdir -p ./build
 	g++ -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
+
+./build/%.o: ./extra/test/%.cpp
+	@mkdir -p ./build
+	g++ -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<" -I src
 
 all: test
 
@@ -41,4 +43,5 @@ test: $(OBJS)
 	g++ -o test $(OBJS) $(LIBS)
 
 clean:
-	rm test $(OBJS) $(CPP_DEPS)
+	@rm -rf build
+	@rm -f test
