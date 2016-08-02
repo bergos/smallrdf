@@ -109,7 +109,7 @@ class RDFDocument : public RDFDataset {
                                 0,
                             const RDFString* datatype = 0);
   const RDFBlankNode* blankNode(const RDFString* value);
-  const RDFQuad* quad(const RDFTerm* subject, const RDFTerm* predicate,
+  const RDFQuad* triple(const RDFTerm* subject, const RDFTerm* predicate,
                       const RDFTerm* object, const RDFTerm* graph = 0);
 
  protected:

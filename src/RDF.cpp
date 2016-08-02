@@ -261,7 +261,7 @@ const RDFBlankNode* RDFDocument::blankNode(const RDFString* value) {
       new RDFBlankNode(value)));
 }
 
-const RDFQuad* RDFDocument::quad(const RDFTerm* subject,
+const RDFQuad* RDFDocument::triple(const RDFTerm* subject,
                                  const RDFTerm* predicate,
                                  const RDFTerm* object, const RDFTerm* graph) {
   return quads.add(new RDFQuad(subject, predicate, object, graph));

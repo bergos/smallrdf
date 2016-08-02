@@ -49,7 +49,7 @@ const RDFQuad* NTriplesParser::parseQuad() {
   }
 
   if (subject && predicate && object) {
-    return document->quad(subject, predicate, object);
+    return document->triple(subject, predicate, object);
   } else {
     return 0;
   }
