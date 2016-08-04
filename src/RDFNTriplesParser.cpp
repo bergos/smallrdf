@@ -93,6 +93,8 @@ const bool NTriplesParser::readWhiteSpace() {
 const RDFTerm* NTriplesParser::readSubject() {
   if (isIRIRef()) {
     return document->namedNode(readIRIRef());
+  } else if (isBlankNodeLabel()) {
+    return document->blankNode(readBlankNodeLabel());
   } else {
     return 0;
   }
