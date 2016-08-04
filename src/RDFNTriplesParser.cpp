@@ -55,7 +55,7 @@ const RDFQuad* NTriplesParser::parseQuad() {
   }
 }
 
-const RDFQuad* NTriplesParser::parseQuad_static(RDFString* input,
+const RDFQuad* NTriplesParser::parseQuad_static(const RDFString* input,
                                                 RDFDocument* document) {
   NTriplesParser parser(input, document);
 

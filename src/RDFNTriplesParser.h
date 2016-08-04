@@ -18,7 +18,7 @@ class NTriplesParser {
                                    RDFDocument* document = 0);
 
   const RDFQuad* parseQuad();
-  static const RDFQuad* parseQuad_static(RDFString* input,
+  static const RDFQuad* parseQuad_static(const RDFString* input,
                                          RDFDocument* document);
 
  protected:

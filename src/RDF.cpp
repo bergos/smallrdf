@@ -29,7 +29,7 @@ RDFString::RDFString(const uint8_t* buf, size_t length)
 
 RDFString::~RDFString() {
   if (_c_str) {
-    delete _c_str;
+    delete[] _c_str;
   }
 }
 
@@ -265,6 +265,10 @@ const RDFQuad* RDFDocument::triple(const RDFTerm* subject,
                                  const RDFTerm* predicate,
                                  const RDFTerm* object, const RDFTerm* graph) {
   return quads.add(new RDFQuad(subject, predicate, object, graph));
+}
+
+RDFDataset* RDFDocument::dataset() {
+  return _datasets.add(new RDFDataset());
 }
 
 const RDFString* RDFDocument::findString(const RDFString* newStr) const {

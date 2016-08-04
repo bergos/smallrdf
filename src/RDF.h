@@ -111,6 +111,7 @@ class RDFDocument : public RDFDataset {
   const RDFBlankNode* blankNode(const RDFString* value);
   const RDFQuad* triple(const RDFTerm* subject, const RDFTerm* predicate,
                       const RDFTerm* object, const RDFTerm* graph = 0);
+  RDFDataset* dataset();
 
  protected:
   RDFList<RDFString*> _strings;

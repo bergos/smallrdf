@@ -23,6 +23,8 @@ TEST(NTriplesSerializer, NamedNode) {
       &dataset);
 
   ASSERT_STREQ(expected, actual);
+
+  delete[] actual;
 }
 
 TEST(NTriplesSerializer, Literal) {
@@ -42,4 +44,6 @@ TEST(NTriplesSerializer, Literal) {
       &dataset);
 
   ASSERT_STREQ(expected, actual);
+
+  delete[] actual;
 }
