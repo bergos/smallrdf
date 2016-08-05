@@ -66,16 +66,36 @@ const char* RDFString::c_str() const {
     return (const char*) _buf;
   } else {
     if (!_c_str) {
-      char** writeableCStr = const_cast<char**>(&this->_c_str);
+      char** writable_c_str = const_cast<char**>(&this->_c_str);
 
-      *writeableCStr = new char[_length + 1];
-      memcpy(*writeableCStr, _buf, _length);
-      *(*writeableCStr + _length) = 0;
+      *writable_c_str = new char[_length + 1];
+      memcpy(*writable_c_str, _buf, _length);
+      *(*writable_c_str + _length) = 0;
     }
 
     return _c_str;
   }
 }
+
+#if defined(ARDUINO)
+
+RDFString::RDFString(String str, bool copy)
+    : _buf((const uint8_t*)str.c_str()),
+	  _length(str.length()),
+	  _trailingZero(true),
+	  _c_str(0) {
+
+  if (copy) {
+    char** writable_c_str = const_cast<char**>(&this->_c_str);
+
+    *writable_c_str = new char[_length + 1];
+    memcpy(*writable_c_str, _buf, _length + 1);
+
+    *const_cast<uint8_t**>(&this->_buf) = (uint8_t*)*writable_c_str;
+  }
+}
+
+#endif
 
 RDFTerm::RDFTerm(const RDFTermType termType, const RDFString* value)
     : termType(termType),
@@ -133,7 +153,7 @@ RDFQuad::RDFQuad(const RDFTerm* subject, const RDFTerm* predicate,
 }
 
 const bool RDFQuad::match(const RDFTerm* subject, const RDFTerm* predicate,
-                          const RDFTerm* object, const RDFTerm* graph) {
+                          const RDFTerm* object, const RDFTerm* graph) const {
   if (subject && !this->subject->equals(subject)) {
     return false;
   }
@@ -159,10 +179,10 @@ RDFDataset::~RDFDataset() {
   }
 }
 
-RDFQuad* RDFDataset::find(const RDFTerm* subject, const RDFTerm* predicate,
+const RDFQuad* RDFDataset::find(const RDFTerm* subject, const RDFTerm* predicate,
                           const RDFTerm* object, const RDFTerm* graph) {
   for (int i = 0; i < quads.length; i++) {
-    RDFQuad* quad = quads.get(i);
+    const RDFQuad* quad = quads.get(i);
 
     if (quad->match(subject, predicate, object, graph)) {
       return quad;
@@ -177,7 +197,7 @@ RDFDataset* RDFDataset::match(const RDFTerm* subject, const RDFTerm* predicate,
   RDFDataset* matches = _datasets.add(new RDFDataset());
 
   for (int i = 0; i < quads.length; i++) {
-    RDFQuad* quad = quads.get(i);
+    const RDFQuad* quad = quads.get(i);
 
     if (quad->match(subject, predicate, object, graph)) {
       matches->quads.add(quad);
@@ -294,3 +314,18 @@ const RDFTerm* RDFDocument::findTerm(const RDFTerm* newTerm) const {
 
   return 0;
 }
+
+#if defined(ARDUINO)
+
+const RDFString* RDFDocument::string(String str, bool copy) {
+  const RDFString cur(str, copy);
+  const RDFString* found = findString(&cur);
+
+  if (found != 0) {
+	return found;
+  }
+
+  return reinterpret_cast<RDFString*>(_strings.add(new RDFString(str, copy)));
+}
+
+#endif

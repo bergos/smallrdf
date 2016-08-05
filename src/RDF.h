@@ -10,12 +10,20 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#if defined(ARDUINO)
+#include <Arduino.h>
+#endif
+
 class RDFString {
  public:
   RDFString();
   RDFString(const char* buf);
   RDFString(const uint8_t* buf, const size_t length);
   virtual ~RDFString();
+
+#if defined(ARDUINO)
+  RDFString(String str, bool copy = false);
+#endif
 
   const uint8_t* buffer() const;
   const size_t length() const;
@@ -80,16 +88,16 @@ class RDFQuad {
           const RDFTerm* object, const RDFTerm* graph = 0);
 
   const bool match(const RDFTerm* subject, const RDFTerm* predicate = 0,
-                   const RDFTerm* object = 0, const RDFTerm* graph = 0);
+                   const RDFTerm* object = 0, const RDFTerm* graph = 0) const;
 };
 
 class RDFDataset {
  public:
-  RDFList<RDFQuad*> quads;
+  RDFList<const RDFQuad*> quads;
 
   virtual ~RDFDataset();
 
-  RDFQuad* find(const RDFTerm* subject, const RDFTerm* predicate = 0,
+  const RDFQuad* find(const RDFTerm* subject, const RDFTerm* predicate = 0,
                 const RDFTerm* object = 0, const RDFTerm* graph = 0);
   RDFDataset* match(const RDFTerm* subject, const RDFTerm* predicate = 0,
                     const RDFTerm* object = 0, const RDFTerm* graph = 0);
@@ -112,6 +120,10 @@ class RDFDocument : public RDFDataset {
   const RDFQuad* triple(const RDFTerm* subject, const RDFTerm* predicate,
                       const RDFTerm* object, const RDFTerm* graph = 0);
   RDFDataset* dataset();
+
+#if defined(ARDUINO)
+  const RDFString* string(String str, bool copy = false);
+#endif
 
  protected:
   RDFList<RDFString*> _strings;
