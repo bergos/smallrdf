@@ -17,12 +17,12 @@
 class RDFString {
  public:
   RDFString();
-  RDFString(const char* buf);
+  explicit RDFString(const char* buf);
   RDFString(const uint8_t* buf, const size_t length);
   virtual ~RDFString();
 
 #if defined(ARDUINO)
-  RDFString(String str, bool copy = false);
+  explicit RDFString(String str, bool copy = false);
 #endif
 
   const uint8_t* buffer() const;
@@ -58,7 +58,7 @@ class RDFTerm {
 
 class RDFNamedNode : public RDFTerm {
  public:
-  RDFNamedNode(const RDFString* value);
+  explicit RDFNamedNode(const RDFString* value);
 };
 
 class RDFLiteral : public RDFTerm {
@@ -74,7 +74,7 @@ class RDFLiteral : public RDFTerm {
 
 class RDFBlankNode : public RDFTerm {
  public:
-  RDFBlankNode(const RDFString* value);
+  explicit RDFBlankNode(const RDFString* value);
 };
 
 class RDFQuad {

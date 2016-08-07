@@ -80,18 +80,18 @@ const char* RDFString::c_str() const {
 #if defined(ARDUINO)
 
 RDFString::RDFString(String str, bool copy)
-    : _buf((const uint8_t*)str.c_str()),
-	  _length(str.length()),
-	  _trailingZero(true),
-	  _c_str(0) {
-
+: _buf((const uint8_t*)str.c_str()),
+_length(str.length()),
+_trailingZero(true),
+_c_str(0) {
   if (copy) {
     char** writable_c_str = const_cast<char**>(&this->_c_str);
 
     *writable_c_str = new char[_length + 1];
     memcpy(*writable_c_str, _buf, _length + 1);
 
-    *const_cast<uint8_t**>(&this->_buf) = (uint8_t*)*writable_c_str;
+    *const_cast<uint8_t**>(&this->_buf) =
+        reinterpret_cast<uint8_t*>(*writable_c_str);
   }
 }
 
@@ -179,8 +179,9 @@ RDFDataset::~RDFDataset() {
   }
 }
 
-const RDFQuad* RDFDataset::find(const RDFTerm* subject, const RDFTerm* predicate,
-                          const RDFTerm* object, const RDFTerm* graph) {
+const RDFQuad* RDFDataset::find(const RDFTerm* subject,
+                                const RDFTerm* predicate, const RDFTerm* object,
+                                const RDFTerm* graph) {
   for (int i = 0; i < quads.length; i++) {
     const RDFQuad* quad = quads.get(i);
 
@@ -282,8 +283,9 @@ const RDFBlankNode* RDFDocument::blankNode(const RDFString* value) {
 }
 
 const RDFQuad* RDFDocument::triple(const RDFTerm* subject,
-                                 const RDFTerm* predicate,
-                                 const RDFTerm* object, const RDFTerm* graph) {
+                                   const RDFTerm* predicate,
+                                   const RDFTerm* object,
+                                   const RDFTerm* graph) {
   return quads.add(new RDFQuad(subject, predicate, object, graph));
 }
 
@@ -322,7 +324,7 @@ const RDFString* RDFDocument::string(String str, bool copy) {
   const RDFString* found = findString(&cur);
 
   if (found != 0) {
-	return found;
+    return found;
   }
 
   return reinterpret_cast<RDFString*>(_strings.add(new RDFString(str, copy)));

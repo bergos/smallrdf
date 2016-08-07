@@ -11,7 +11,7 @@ class NTriplesParser {
  public:
   RDFDocument* document;
 
-  NTriplesParser(const RDFString* input, RDFDocument* document = 0);
+  explicit NTriplesParser(const RDFString* input, RDFDocument* document = 0);
 
   RDFDocument* parse();
   static RDFDocument* parse_static(const RDFString* input,
