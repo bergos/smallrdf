@@ -224,33 +224,42 @@ RDFDocument::~RDFDocument() {
 
 const RDFString* RDFDocument::string(const char* buf) {
   const RDFString cur(buf);
+
+#if defined(ARDUINO)
   const RDFString* found = findString(&cur);
 
   if (found != 0) {
     return found;
   }
+#endif
 
   return reinterpret_cast<RDFString*>(_strings.add(new RDFString(buf)));
 }
 
 const RDFString* RDFDocument::string(const uint8_t* buf, const size_t length) {
   const RDFString cur(buf, length);
+
+#if defined(ARDUINO)
   const RDFString* found = findString(&cur);
 
   if (found != 0) {
     return found;
   }
+#endif
 
   return reinterpret_cast<RDFString*>(_strings.add(new RDFString(buf, length)));
 }
 
 const RDFNamedNode* RDFDocument::namedNode(const RDFString* value) {
   const RDFNamedNode cur(value);
+
+#if defined(ARDUINO)
   const RDFTerm* found = findTerm(&cur);
 
   if (found != 0) {
     return reinterpret_cast<const RDFNamedNode*>(found);
   }
+#endif
 
   return reinterpret_cast<const RDFNamedNode*>(_terms.add(
       new RDFNamedNode(value)));
@@ -260,11 +269,14 @@ const RDFLiteral* RDFDocument::literal(const RDFString* value,
                                        const RDFString* language,
                                        const RDFString* datatype) {
   const RDFLiteral cur(value, language, datatype);
+
+#if defined(ARDUINO)
   const RDFTerm* found = findTerm(&cur);
 
   if (found != 0) {
     return reinterpret_cast<const RDFLiteral*>(found);
   }
+#endif
 
   return reinterpret_cast<const RDFLiteral*>(_terms.add(
       new RDFLiteral(value, language, datatype)));
@@ -272,11 +284,14 @@ const RDFLiteral* RDFDocument::literal(const RDFString* value,
 
 const RDFBlankNode* RDFDocument::blankNode(const RDFString* value) {
   const RDFBlankNode cur(value);
+
+#if defined(ARDUINO)
   const RDFTerm* found = findTerm(&cur);
 
   if (found != 0) {
     return reinterpret_cast<const RDFBlankNode*>(found);
   }
+#endif
 
   return reinterpret_cast<const RDFBlankNode*>(_terms.add(
       new RDFBlankNode(value)));
